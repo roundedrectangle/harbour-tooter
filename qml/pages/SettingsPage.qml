@@ -51,11 +51,6 @@ Page {
                     property var model: modelData.userInfo
                     textHighlighted: index === appConfig.activeAccountIndex
 
-                    Connections {
-                        target: column
-                        onActiveAccountChanged: textHighlighted = index === appConfig.activeAccountIndex
-                    }
-
                     onClicked: appConfig.activeAccountIndex = index
 
                     function remove() {

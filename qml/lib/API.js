@@ -1,6 +1,7 @@
 .pragma library
 
 function setActiveAccount(account) {
+    console.log("Setting active account::", api, JSON.stringify(account))
     api.setConfig("instance", account.instance)
     api.setConfig("api_user_token", account.api_user_token)
 

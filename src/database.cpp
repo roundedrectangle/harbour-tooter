@@ -128,7 +128,7 @@ void Database::setMultipleAccountsHintCompleted(bool value) {
 QVariantList Database::accounts() {
     QVariantList accounts;
     const int size = settings->beginReadArray(ACCOUNTS);
-    for (int i=0; i < size; i++) {
+    for (int i=1; i <= size; i++) {
         QVariantMap account;
         settings->setArrayIndex(i);
         for (const QString &key : settings->allKeys())
@@ -136,13 +136,13 @@ QVariantList Database::accounts() {
         accounts.append(account);
     }
     settings->endArray();
+    qDebug() << "read accounts" << accounts;
     return accounts;
 }
 
 void Database::addAccount(const QVariantMap &account) {
-    const int size = settings->beginReadArray(ACCOUNTS);
-    settings->endArray();
-    settings->beginWriteArray(ACCOUNTS);
+    const int size = accountsCount();
+    settings->beginWriteArray(ACCOUNTS, size + 1);
     settings->setArrayIndex(size);
 
     for (const QString &key : account.keys())
@@ -153,7 +153,8 @@ void Database::addAccount(const QVariantMap &account) {
 }
 
 void Database::removeAccount(int index) {
-    settings->beginWriteArray(ACCOUNTS);
+    const int size = accountsCount();
+    settings->beginWriteArray(ACCOUNTS, size - 1);
     settings->setArrayIndex(index);
     settings->remove(""); // See QSettings::clear() documentation
     settings->endArray();
@@ -196,12 +197,12 @@ QVariantMap Database::activeAccount() {
     for (const QString &key : settings->allKeys())
         account.insert(key, settings->value(key));
     settings->endArray();
+    qDebug() << "Active account!!! (READ)" << size << index << account;
     return account;
 }
 
 void Database::updateActiveAccount(const QVariantMap &updated) {
-    const int size = settings->beginReadArray(ACCOUNTS);
-    settings->endArray();
+    const int size = accountsCount();
 
     if (size == 0)
         return;
@@ -212,7 +213,7 @@ void Database::updateActiveAccount(const QVariantMap &updated) {
         return;
     }
 
-    settings->beginWriteArray(ACCOUNTS);
+    settings->beginWriteArray(ACCOUNTS, size);
     settings->setArrayIndex(index);
 
     for (const QString &key : updated.keys())
