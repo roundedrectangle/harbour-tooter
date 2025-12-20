@@ -1,94 +1,10 @@
 .pragma library
-.import QtQuick.LocalStorage 2.0 as LS
 
-var db = LS.LocalStorage.openDatabaseSync("tooterb", "", "harbour-tooterb", 100000);
-var conf = {};
-var mediator = (function(){
-    var subscribe = function(channel, fn){
-        if(!mediator.channels[channel]) mediator.channels[channel] = [];
-        mediator.channels[channel].push({ context : this, callback : fn });
-        return this;
-    };
-
-    var publish = function(channel){
-        if(!mediator.channels[channel]) return false;
-        var args = Array.prototype.slice.call(arguments, 1);
-        for(var i = 0, l = mediator.channels[channel].length; i < l; i++){
-            var subscription = mediator.channels[channel][i];
-            subscription.callback.apply(subscription.context.args);
-        };
-        return this;
-    };
-
-    return {
-        channels : {},
-        publish : publish,
-        subscribe : subscribe,
-        installTo : function(obj){
-            obj.subscribe = subscribe;
-            obj.publish = publish;
-        }
-    };
-}());
-
-function getActiveAccount() {
-    // not sure if this can be used for dynamic qobject properties
-    return conf.accounts[conf.activeAccount] || {}
-}
-
-function setActiveAccount(index) {
-    var account = conf.accounts[index]
-    conf.activeAccount = index
-
+function setActiveAccount(account) {
     api.setConfig("instance", account.instance)
     api.setConfig("api_user_token", account.api_user_token)
 
     clearModels()
-}
-
-var init = function(){
-    console.log("db.version: "+db.version);
-    if(db.version === '') {
-        db.transaction(function(tx) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS settings ('
-                          + ' key TEXT UNIQUE, '
-                          + ' value TEXT '
-                          + ');');
-            //tx.executeSql('INSERT INTO settings (key, value) VALUES (?, ?)', ["conf", "{}"]);
-        });
-        db.changeVersion('', '0.1', function(tx) {
-
-        });
-    }
-    db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT * FROM settings;');
-        console.log("READING CONF FROM DB")
-        for (var i = 0; i < rs.rows.length; i++) {
-            //var json = JSON.parse(rs.rows.item(i).value);
-            console.log(rs.rows.item(i).key+" \t > \t "+rs.rows.item(i).value)
-            conf[rs.rows.item(i).key] = JSON.parse(rs.rows.item(i).value)
-        }
-        console.log("END OF READING")
-        console.log(JSON.stringify(conf));
-        mediator.publish('confLoaded', { loaded: true});
-    });
-};
-
-function saveData() {
-    console.log("SAVING CONF TO DB")
-    db.transaction(function(tx) {
-        for (var key in conf) {
-            if (conf.hasOwnProperty(key)){
-                console.log(key + "\t>\t"+JSON.stringify(conf[key]));
-                if (typeof conf[key] === "object" && conf[key] === null) {
-                    tx.executeSql('DELETE FROM settings WHERE key=? ', [key])
-                } else {
-                    tx.executeSql('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?) ', [key, JSON.stringify(conf[key])])
-                }
-            }
-        }
-        console.log("END OF SAVING")
-    });
 }
 
 var tootParser = function(data){

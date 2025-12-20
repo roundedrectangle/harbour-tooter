@@ -50,10 +50,11 @@ Page {
 
                 onReceivedAccessToken: {
                     if (debug) console.log("Got access token: " + token.access_token)
-                    var account = Logic.getActiveAccount()
-                    account["api_user_token"] = token.access_token
-                    account["login"] = true
-                    Logic.api.setConfig("api_user_token", account["api_user_token"])
+                    appConfig.updateActiveAccount({
+                        api_user_token: token.access_token,
+                        login: true
+                    })
+                    Logic.api.setConfig("api_user_token", token.access_token)
                     pageStack.clear()
                     Logic.clearModels()
                     pageStack.push(Qt.resolvedUrl("MainPage.qml"))
@@ -89,15 +90,15 @@ Page {
                                                       if (debug) console.log(data)
                                                       var conf = JSON.parse(data)
 
-                                                      Logic.conf.accounts.push({
+                                                      appConfig.addAccount({
                                                           api_user_token: conf.api_user_token,
                                                           instance: instance.text,
                                                           type: typeBox.currentIndex,
                                                           login: false,
                                                       })
-                                                      Logic.conf.activeAccount = Logic.conf.accounts.length - 1
+                                                      appConfig.activateLastAccount()
                                                       if(debug) console.log(JSON.stringify(conf))
-                                                      if(debug) console.log(JSON.stringify(Logic.conf))
+                                                      if(debug) console.log(JSON.stringify(appConfig.activeAccount))
 
                                                       // we got our application
 

@@ -17,10 +17,10 @@
 #include "imageuploader.h"
 #include "notifications.h"
 #include "dbus.h"
+#include "database.h"
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
     QScopedPointer<QQuickView> view(SailfishApp::createView());
     //QQmlContext *context = view.data()->rootContext();
@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
 
     Dbus *dbus = new Dbus();
     view->rootContext()->setContextProperty("Dbus", dbus);
+
+    Database *database = new Database();
+    view->rootContext()->setContextProperty("appConfig", database);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-tooterb.qml"));
     view->show();

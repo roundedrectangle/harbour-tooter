@@ -43,10 +43,10 @@ Page {
 
     // This function is used by the upload Pickers
     function fileUpload(file,mime) {
-        imageUploader.setUploadUrl(Logic.getActiveAccount().instance + "/api/v1/media")
+        imageUploader.setUploadUrl(appConfig.activeAccount.instance + "/api/v1/media")
         imageUploader.setFile(file)
         imageUploader.setMime(mime)
-        imageUploader.setAuthorizationHeader(Logic.getActiveAccount().api_user_token)
+        imageUploader.setAuthorizationHeader(appConfig.activeAccount.api_user_token)
         imageUploader.upload()
     }
 
@@ -65,7 +65,7 @@ Page {
                         "name": "q",
                         "data": suggestedUser
                     }],
-                "conf": Logic.conf
+                "conf": appConfig.dumpForWorker()
             }
             worker.sendMessage(msg)
             predictionList.visible = true
@@ -403,7 +403,7 @@ Page {
 
         IconButton {
             id: btnAddMusic
-            visible: Logic.getActiveAccount().type !== 1
+            visible: appConfig.activeAccount.type !== 1
             enabled: mediaModel.count < 4
             icon.source: "image://theme/icon-m-file-audio?" + ( pressed ? Theme.highlightColor : (warningContent.visible ? Theme.secondaryHighlightColor : Theme.primaryColor) )
             anchors {
@@ -442,10 +442,10 @@ Page {
                     var mimeType = selectedContentProperties.mimeType
                     fileUpload(imagePath,mimeType)
                     /*
-                    imageUploader.setUploadUrl(Logic.getActiveAccount().instance + "/api/v1/media")
+                    imageUploader.setUploadUrl(appConfig.activeAccount.instance + "/api/v1/media")
                     imageUploader.setFile(imagePath)
                     imageUploader.setMime(mimeType)
-                    imageUploader.setAuthorizationHeader(Logic.getActiveAccount().api_user_token)
+                    imageUploader.setAuthorizationHeader(appConfig.activeAccount.api_user_token)
                     imageUploader.upload()
                     */
                 }
@@ -519,7 +519,7 @@ Page {
         IconButton {
             id: btnSend
             icon.source: "image://theme/icon-m-send?" + (pressed ? Theme.highlightColor : Theme.primaryColor)
-            enabled: (toot.text !== "" || mediaModel.count > 0) && toot.text.length < tootMaxChar && uploadProgress.width == 0 && ((Logic.getActiveAccount().type === 1 && type !== "reply") ? (mediaModel.count > 0) : true)
+            enabled: (toot.text !== "" || mediaModel.count > 0) && toot.text.length < tootMaxChar && uploadProgress.width == 0 && ((appConfig.activeAccount.type === 1 && type !== "reply") ? (mediaModel.count > 0) : true)
             anchors {
                 top: toot.bottom
                 topMargin: -Theme.paddingSmall * 1.5
@@ -543,7 +543,7 @@ Page {
                         "visibility": visibility[privacy.currentIndex],
                         "media_ids": media_ids
                     },
-                    "conf": Logic.conf
+                    "conf": appConfig.dumpForWorker()
                 }
                 if (status_id)
                     msg.params['in_reply_to_id'] = (status_id) + ""
@@ -601,7 +601,7 @@ Page {
                                "method": 'GET',
                                "model": mdl,
                                "params": { },
-                               "conf": Logic.conf
+                               "conf": appConfig.dumpForWorker()
                            })
     }
 

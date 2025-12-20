@@ -25,13 +25,14 @@ SilicaGridView {
             contentHeight: 0
             menu: Component {
                 ContextMenu {
-                    hasContent: Logic.conf.accounts.length > 1
+                    hasContent: appConfig.accountsCount > 1
                     Repeater {
-                        model: Logic.conf.accounts
+                        model: appConfig.accounts
                         MenuItem {
-                            enabled: index !== Logic.conf.activeAccount
+                            enabled: index !== appConfig.activeAccountIndex
                             text: modelData.userInfo.account_acct
-                            onClicked: Logic.setActiveAccount(index)
+                            onClicked:
+                                appConfig.activeAccountIndex = index
                         }
                     }
                 }
@@ -163,7 +164,7 @@ SilicaGridView {
 
             running: false
             function updateRunning() {
-                if (!showMenuOnPressAndHold || Logic.conf.multipleAccountsHintCompleted || !isPortrait) {
+                if (!showMenuOnPressAndHold || appConfig.multipleAccountsHintCompleted || !isPortrait) {
                     running = false
                     return
                 }
@@ -175,7 +176,7 @@ SilicaGridView {
 
                 if (running)
                     rectangle.pressAndHold.connect(function() {
-                        Logic.conf.multipleAccountsHintCompleted = true
+                        appConfig.multipleAccountsHintCompleted = true
                         updateRunning()
                     })
             }
@@ -183,13 +184,13 @@ SilicaGridView {
             Component.onCompleted: updateRunning()
             Connections {
                 ignoreUnknownSignals: true
-                target: !showMenuOnPressAndHold || Logic.conf.multipleAccountsHintCompleted
+                target: !showMenuOnPressAndHold || appConfig.multipleAccountsHintCompleted
                         ? undefined : gridView
                 onIsPortraitChanged: hint.updateRunning()
             }
 
             Binding {
-                when: showMenuOnPressAndHold && !Logic.conf.multipleAccountsHintCompleted
+                when: showMenuOnPressAndHold && !appConfig.multipleAccountsHintCompleted
                 target: gridView
                 property: 'showInteractionHintLabel'
                 value: hint.running

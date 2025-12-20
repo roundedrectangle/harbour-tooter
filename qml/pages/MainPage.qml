@@ -328,14 +328,15 @@ Page {
         onMessage: {
             if (debug) console.log(JSON.stringify(messageObject))
             if (messageObject.action === "accounts/verify_credentials") {
-                Logic.getActiveAccount().userInfo = messageObject.data
-                Logic.getActiveAccount().userInfo.account_acct += "@" + (Logic.getActiveAccount()['instance'].split("//")[1])
-                delete Logic.getActiveAccount().userInfo.account_id
+                var info = messageObject.data
+                info.account_acct += "@" + (appConfig.activeAccount.instance.split("//")[1])
+                delete info.account_id
+                appConfig.updateActiveAccount({userInfo: info})
             }
         }
 
         function verifyCredentials() {
-            sendMessage({action: "accounts/verify_credentials", conf: Logic.conf})
+            sendMessage({action: "accounts/verify_credentials", conf: appConfig.dumpForWorker()})
         }
 
         Component.onCompleted: verifyCredentials()

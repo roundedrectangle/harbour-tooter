@@ -371,7 +371,7 @@ SilicaListView {
             'params'    : p,
             'model'     : model,
             'mode'      : mode,
-            'conf'      : Logic.conf
+            'conf'      : appConfig.dumpForWorker()
         }
 
         //if (debug) console.log(JSON.stringify(msg))

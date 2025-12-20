@@ -38,12 +38,12 @@ WorkerScript.onMessage = function(msg) {
     /** order notifications in ASC order */
     function orderNotifications(items){
         for (var i = items.length-1; i > 0; i--) {
-            if (items[i].id > 0 ) //msg.conf.notificationLastID)
+            if (items[i].id > 0 ) //msg.conf.notificationLastId)
                 WorkerScript.sendMessage({ 'fireNotification': true, "data": items[i]})
         }
     }
 
-    var account = msg.conf && msg.conf.accounts ? msg.conf.accounts[msg.conf.activeAccount] : undefined
+    var account = msg.conf ? msg.conf.activeAccount : undefined
 
     /** Logged-in status */
     if (!account || !account.login) {
@@ -52,8 +52,8 @@ WorkerScript.onMessage = function(msg) {
     }
 
     /** Load images */
-    if (typeof msg.conf['loadImages'] !== "undefined")
-        loadImages = msg.conf['loadImages']
+    if (typeof msg.conf.loadImages !== "undefined")
+        loadImages = msg.conf.loadImages
 
 
     /* init API statuses */

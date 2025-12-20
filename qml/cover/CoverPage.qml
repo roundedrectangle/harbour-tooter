@@ -104,12 +104,6 @@ CoverBackground {
     signal activateapp(string person, string notice)
     CoverActionList {
         id: coverAction
-        /*CoverAction {
-            iconSource: "image://theme/icon-cover-next"
-             onTriggered: {
-                 Logic.conf.notificationLastID = 0;
-             }
-        }*/
 
         CoverAction {
             iconSource: "image://theme/icon-cover-new"
@@ -125,20 +119,19 @@ CoverBackground {
     function checkNotifications(){
         console.log("checkNotifications")
         var notificationsNum = 0
-        var notificationLastID = Logic.conf.notificationLastID;
-        //Logic.conf.notificationLastID = 0;
+        var notificationLastId = appConfig.notificationLastId;
         for(var i = 0; i < Logic.modelTLnotifications.count; i++) {
-            if (notificationLastID < Logic.modelTLnotifications.get(i).id) {
-                notificationLastID = Logic.modelTLnotifications.get(i).id
+            if (notificationLastId < Logic.modelTLnotifications.get(i).id) {
+                notificationLastId = Logic.modelTLnotifications.get(i).id
             }
 
-            if (Logic.conf.notificationLastID < Logic.modelTLnotifications.get(i).id) {
+            if (appConfig.notificationLastId < Logic.modelTLnotifications.get(i).id) {
                 notificationsNum++
                 Logic.notifier(Logic.modelTLnotifications.get(i))
             }
         }
         notificationsLbl.text = notificationsNum;
-        Logic.conf.notificationLastID = notificationLastID;
+        appConfig.notificationLastId = notificationLastId;
     }
 
 }

@@ -38,59 +38,26 @@ ApplicationWindow {
     allowedOrientations: defaultAllowedOrientations
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
     Component.onCompleted: {
-        var obj = {}
-        Logic.mediator.installTo(obj)
-        obj.subscribe('confLoaded', function() {
-            //console.log('confLoaded');
-            //console.log(JSON.stringify(Logic.conf))
-            if (!Logic.conf['notificationLastID'])
-                Logic.conf['notificationLastID'] = 0
-            if (!Logic.conf['accounts'])
-                Logic.conf['accounts'] = []
+        var currentAccount = appConfig.activeAccount
 
-            var oldAccountParameters = ['api_user_token', 'instance', 'login']
-            if (oldAccountParameters.every(function(el) { return el in Logic.conf })) {
-                if (!('type' in Logic.conf))
-                    Logic.conf.type = 0
-                oldAccountParameters.push('type')
+        if (currentAccount.instance) {
+            Logic.api = Logic.mastodonAPI({
+                                                "instance": currentAccount.instance,
+                                                "api_user_token": ""
+                                            })
+        }
 
-                var account = {}
-                oldAccountParameters.forEach(function(el) {
-                    account[el] = Logic.conf[el]
-                    Logic.conf[el] = null
-                })
-                Logic.conf.accounts.push(account)
-                Logic.conf.activeAccount = Logic.conf.accounts.length - 1
-            }
-
-            var currentAccount = Logic.getActiveAccount()
-
-            if (currentAccount.instance) {
-                Logic.api = Logic.mastodonAPI({
-                                                  "instance": currentAccount.instance,
-                                                  "api_user_token": ""
-                                              })
-            }
-
-            if (currentAccount.login) {
-                //Logic.conf['notificationLastID'] = 0
-                Logic.api.setConfig("api_user_token", currentAccount['api_user_token'])
-                //accounts/verify_credentials
-                Logic.api.get('instance', [], function(data) {
-                   // console.log(JSON.stringify(data))
-                    pageStack.push(Qt.resolvedUrl("./pages/MainPage.qml"), {})
-                })
-                //pageStack.push(Qt.resolvedUrl("./pages/Conversation.qml"), {})
-            } else {
-                pageStack.push(Qt.resolvedUrl("./pages/LoginPage.qml"), {})
-            }
-        })
-        Logic.init()
-    }
-
-    Component.onDestruction: {
-        //Logic.conf.notificationLastID = 0;
-        Logic.saveData()
+        if (currentAccount.login) {
+            Logic.api.setConfig("api_user_token", currentAccount['api_user_token'])
+            //accounts/verify_credentials
+            Logic.api.get('instance', [], function(data) {
+                // console.log(JSON.stringify(data))
+                pageStack.push(Qt.resolvedUrl("./pages/MainPage.qml"), {})
+            })
+            //pageStack.push(Qt.resolvedUrl("./pages/Conversation.qml"), {})
+        } else {
+            pageStack.push(Qt.resolvedUrl("./pages/LoginPage.qml"), {})
+        }
     }
 
     Connections {
@@ -105,5 +72,11 @@ ApplicationWindow {
             }))
             activate()
         }
+    }
+
+    Connections {
+        target: appConfig
+        onActiveAccountChanged:
+            Logic.setActiveAccount(appConfig.activeAccount)
     }
 }

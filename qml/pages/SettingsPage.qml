@@ -36,46 +36,34 @@ Page {
                 text: qsTr("Load Images in Toots")
                 description: qsTr("Disable this option if you want to preserve your data connection")
                 icon.source: "image://theme/icon-m-image"
-                checked: typeof Logic.conf['loadImages'] !== "undefined" && Logic.conf['loadImages']
-                onClicked: {
-                    Logic.conf['loadImages'] = checked
-                }
+                checked: appConfig.loadImages
+                automaticCheck: false
+                onClicked: appConfig.loadImages = !checked
             }
 
             SectionHeader { text: qsTr("Account") }
 
-            signal activeAccountChanged
-            function setActiveAccount(index, removing) {
-                if (!removing && Logic.conf.activeAccount === index) return
-                Logic.setActiveAccount(index)
-
-                if (removing)
-                    accountsList.model = Logic.conf.accounts
-                else activeAccountChanged()
-            }
-
             Repeater {
                 id: accountsList
-                model: Logic.conf.accounts
+                model: appConfig.accounts
                 ItemUser {
                     id: userItem
                     property var model: modelData.userInfo
-                    textHighlighted: index === Logic.conf.activeAccount
+                    textHighlighted: index === appConfig.activeAccountIndex
 
                     Connections {
                         target: column
-                        onActiveAccountChanged: textHighlighted = index === Logic.conf.activeAccount
+                        onActiveAccountChanged: textHighlighted = index === appConfig.activeAccountIndex
                     }
 
-                    onClicked: column.setActiveAccount(index)
+                    onClicked: appConfig.activeAccountIndex = index
 
                     function remove() {
                         remorseAction(qsTr("Account removed"), function() {
-                            Logic.conf.accounts.splice(index, 1)
-                            if (Logic.conf.accounts.length)
-                                column.setActiveAccount(0, true) //Logic.conf.accounts.length - 1
+                            appConfig.removeAccount(index)
+                            if (appConfig.accountsCount)
+                                appConfig.activeAccountIndex = 0 //appConfig.accountsCount - 1
                             else {
-                                Logic.conf.activeAccount = null
                                 pageStack.clear()
                                 pageStack.push(Qt.resolvedUrl("LoginPage.qml"))
                             }

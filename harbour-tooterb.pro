@@ -44,16 +44,14 @@ SOURCES += src/harbour-tooterb.cpp \
     src/filedownloader.cpp \
     src/notifications.cpp \
     src/dbusAdaptor.cpp \
-    src/dbus.cpp \
-    src/requestsmanager.cpp
+    src/dbus.cpp
 
 HEADERS += src/imageuploader.h \
     src/database.h \
     src/filedownloader.h \
     src/notifications.h \
     src/dbusAdaptor.h \
-    src/dbus.h \
-    src/requestsmanager.h
+    src/dbus.h
 
 DISTFILES += qml/harbour-tooterb.qml \
     qml/images/tooterb-cover.svg \

@@ -286,7 +286,7 @@ BackgroundItem {
             onClicked: {
                 var status = typeof model.status_reblogged !== "undefined" && model.status_reblogged
                 worker.sendMessage({
-                                       "conf"   : Logic.conf,
+                                       "conf"   : appConfig.dumpForWorker(),
                                        "params" : [],
                                        "method" : "POST",
                                        "bgAction": true,
@@ -327,7 +327,7 @@ BackgroundItem {
             onClicked: {
                 var status = typeof model.status_favourited !== "undefined" && model.status_favourited
                 worker.sendMessage({
-                                       "conf"   : Logic.conf,
+                                       "conf"   : appConfig.dumpForWorker(),
                                        "params" : [],
                                        "method" : "POST",
                                        "bgAction": true,
@@ -368,7 +368,7 @@ BackgroundItem {
             onClicked: {
                 var status = typeof model.status_bookmarked !== "undefined" && model.status_bookmarked
                 worker.sendMessage({
-                                       "conf"   : Logic.conf,
+                                       "conf"   : appConfig.dumpForWorker(),
                                        "params" : [],
                                        "method" : "POST",
                                        "bgAction": true,
