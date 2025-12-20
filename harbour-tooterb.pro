@@ -39,17 +39,21 @@ interfaces.path = /usr/share/dbus-1/interfaces/
 interfaces.files = config/ba.dysko.harbourb.tooterb.xml
 
 SOURCES += src/harbour-tooterb.cpp \
+    src/databasemanager.cpp \
     src/imageuploader.cpp \
     src/filedownloader.cpp \
     src/notifications.cpp \
     src/dbusAdaptor.cpp \
-    src/dbus.cpp
+    src/dbus.cpp \
+    src/requestsmanager.cpp
 
 HEADERS += src/imageuploader.h \
+    src/databasemanager.h \
     src/filedownloader.h \
     src/notifications.h \
     src/dbusAdaptor.h \
-    src/dbus.h
+    src/dbus.h \
+    src/requestsmanager.h
 
 DISTFILES += qml/harbour-tooterb.qml \
     qml/images/tooterb-cover.svg \
